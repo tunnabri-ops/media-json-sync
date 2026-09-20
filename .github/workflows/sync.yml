@@ -1,0 +1,25 @@
+name: Auto Fetch JSON
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # প্রতি ৬ ঘণ্টা পর পর অটোমেটিক চলবে
+  workflow_dispatch:       # যাতে আপনি নিজেও বাটন চেপে রান করতে পারেন
+
+jobs:
+  update-json:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch and save JSON
+        run: |
+          curl -s "https://moviecdi.cloudbd.one/static-api/menus.json" -o menus.json
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add menus.json
+          git commit -m "Updated menus.json" || exit 0
+          git push
